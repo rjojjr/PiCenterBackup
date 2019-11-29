@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = "readings")
-public class Reading {
+public class Reading implements DBItem{
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
