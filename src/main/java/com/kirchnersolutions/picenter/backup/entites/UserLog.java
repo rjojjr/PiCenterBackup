@@ -1,5 +1,6 @@
 package com.kirchnersolutions.picenter.backup.entites;
 
+import com.kirchnersolutions.picenter.backup.csv.interfaces.DBItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "user_logs")
-public class UserLog implements DBItem{
+public class UserLog implements DBItem {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -33,6 +34,13 @@ public class UserLog implements DBItem{
     private Long time;
 
     public UserLog(Long userId, String action, Long time){
+        this.userId = userId;
+        this.action = action;
+        this.time = time;
+    }
+
+    public UserLog(Long id, Long userId, String action, Long time){
+        this.id = id;
         this.userId = userId;
         this.action = action;
         this.time = time;

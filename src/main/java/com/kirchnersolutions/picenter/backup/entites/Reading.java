@@ -1,5 +1,6 @@
 package com.kirchnersolutions.picenter.backup.entites;
 
+import com.kirchnersolutions.picenter.backup.csv.interfaces.DBItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Setter
 @Entity
 @Table(name = "readings")
-public class Reading implements DBItem{
+public class Reading implements DBItem {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -40,6 +41,14 @@ public class Reading implements DBItem{
     private String room;
 
     public Reading(Long time, int temp, int humidity, String room){
+        this.time = time;
+        this.temp = temp;
+        this.humidity = humidity;
+        this.room = room;
+    }
+
+    public Reading(Long id, Long time, int temp, int humidity, String room){
+        this.id = id;
         this.time = time;
         this.temp = temp;
         this.humidity = humidity;
