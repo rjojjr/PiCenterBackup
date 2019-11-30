@@ -16,7 +16,17 @@ configurations {
 }
 
 repositories {
+    flatDir {
+        dirs "$rootProject.projectDir/libs"
+    }
     mavenCentral()
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.spring.io/libs-snapshot'
+    }
 }
 
 dependencies {
@@ -28,6 +38,8 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    runtimeOnly 'mysql:mysql-connector-java:8.0.11'
+    compile "com.h2database:h2:1.4.197"
 }
 
 test {

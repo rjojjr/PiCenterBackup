@@ -1,4 +1,6 @@
-package com.kirchnersolutions.picenter.backup.csv.interfaces;
+package com.kirchnersolutions.picenter.backup.csv.parsers;
+
+import com.kirchnersolutions.picenter.backup.entites.DBItem;
 
 import java.util.List;
 
