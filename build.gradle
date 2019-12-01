@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.kirchnersolutions'
 version = '1.0.00'
-def build = 100100
+def build = 100101
 sourceCompatibility = '1.8'
 
 configurations {

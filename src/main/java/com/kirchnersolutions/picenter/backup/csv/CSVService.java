@@ -55,10 +55,22 @@ public class CSVService {
         }
     }
 
-    @Scheduled(cron = "0 0 2 * * * *")
+    @Scheduled(cron = "0 0 2 * * *")
     public void backup(){
         try{
-            makeCSVSwitch("all");
+            if(makeCSVSwitch("all")){
+                downloadFile = new File(downloadDir, "/PiCenterBackup_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-" , "-") + ".zip");
+                downloadFile.createNewFile();
+                List<File> zipFiles = Arrays.asList(downloadFileTempDir.listFiles());
+                if(ZipTools.zip(zipFiles, downloadFile.getPath())){
+                    List<File> files = new ArrayList<>();
+                    files.add(downloadFileTempDir);
+                }
+                List<File> files = new ArrayList<>();
+                files.add(downloadFileTempDir);
+                files.add(downloadFile);
+                DeleteTools.delete(files);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
