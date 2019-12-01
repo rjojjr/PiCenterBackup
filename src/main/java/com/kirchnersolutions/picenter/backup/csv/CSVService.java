@@ -30,7 +30,7 @@ public class CSVService {
     AppUserRepository appUserRepository;
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
-    private File dir, appUserDir, userLogDir, readingDir, downloadDir, downloadFileTempDir, downloadFile, restoreDir;
+    private File dir, backupTempDir, backupFile, restoreDir, auto;
 
     @Autowired
     public CSVService(AppUserRepository appUserRepository, UserLogRepository userLogRepository, ReadingRepository readingRepository, ThreadPoolTaskExecutor threadPoolTaskExecutor){
@@ -39,18 +39,13 @@ public class CSVService {
         this.userLogRepository = userLogRepository;
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
         dir = new File("PiCenter/Backup");
-        appUserDir = new File(dir, "/AppUsers");
-        userLogDir = new File(dir, "/UserLogs");
-        readingDir = new File(dir, "/Readings");
-        downloadDir = new File(dir, "/Download");
-        downloadFileTempDir = new File(downloadDir, "/PiCenterBackup");
-        downloadFile = new File(downloadDir, "/PiCenterBackup.zip");
         restoreDir = new File(dir, "/Restore");
+        auto = new File(dir, "/automated");
+        backupTempDir = new File(auto, "/PiCenterBackup");
+        backupFile = new File(auto, "/PiCenterBackup.zip");
         if(!dir.exists()){
             dir.mkdirs();
-            appUserDir.mkdirs();
-            userLogDir.mkdirs();
-            readingDir.mkdirs();
+            auto.mkdirs();
             restoreDir.mkdirs();
         }
     }
@@ -59,16 +54,15 @@ public class CSVService {
     public void backup(){
         try{
             if(makeCSVSwitch("all")){
-                downloadFile = new File(downloadDir, "/PiCenterBackup_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-" , "-") + ".zip");
-                downloadFile.createNewFile();
-                List<File> zipFiles = Arrays.asList(downloadFileTempDir.listFiles());
-                if(ZipTools.zip(zipFiles, downloadFile.getPath())){
+                backupFile = new File(auto, "/PiCenterAutoBackup_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-" , "-") + ".zip");
+                backupFile.createNewFile();
+                List<File> zipFiles = Arrays.asList(backupTempDir.listFiles());
+                if(ZipTools.zip(zipFiles, backupFile.getPath())){
                     List<File> files = new ArrayList<>();
-                    files.add(downloadFileTempDir);
+                    files.add(backupTempDir);
                 }
                 List<File> files = new ArrayList<>();
-                files.add(downloadFileTempDir);
-                files.add(downloadFile);
+                files.add(backupTempDir);
                 DeleteTools.delete(files);
             }
         }catch (Exception e){
@@ -124,38 +118,38 @@ public class CSVService {
     private boolean GenerateDownload(String table) throws Exception{
         try{
             if(makeCSVSwitch(table)){
-                downloadFile.createNewFile();
-                List<File> zipFiles = Arrays.asList(downloadFileTempDir.listFiles());
-                if(ZipTools.zip(zipFiles, downloadFile.getPath())){
+                backupFile.createNewFile();
+                List<File> zipFiles = Arrays.asList(backupTempDir.listFiles());
+                if(ZipTools.zip(zipFiles, backupFile.getPath())){
                     List<File> files = new ArrayList<>();
-                    files.add(downloadFileTempDir);
+                    files.add(backupTempDir);
                     DeleteTools.delete(files);
                     return true;
                 }
                 List<File> files = new ArrayList<>();
-                files.add(downloadFileTempDir);
-                files.add(downloadFile);
+                files.add(backupTempDir);
+                files.add(backupFile);
                 DeleteTools.delete(files);
                 return false;
             }
         }catch (Exception e){
             e.printStackTrace();
             List<File> files = new ArrayList<>();
-            files.add(downloadFileTempDir);
-            files.add(downloadFile);
+            files.add(backupTempDir);
+            files.add(backupFile);
             DeleteTools.delete(files);
             return false;
         }
         List<File> files = new ArrayList<>();
-        files.add(downloadFileTempDir);
-        files.add(downloadFile);
+        files.add(backupTempDir);
+        files.add(backupFile);
         DeleteTools.delete(files);
         return false;
     }
 
     private boolean makeCSVSwitch(String table) throws IOException, Exception {
-        if(!downloadFileTempDir.exists()){
-            downloadFileTempDir.mkdirs();
+        if(!backupTempDir.exists()){
+            backupTempDir.mkdirs();
         }
         File out;
         boolean success = false;
@@ -180,17 +174,17 @@ public class CSVService {
                 }
                 break;
             case "users":
-                out = new File(downloadFileTempDir, "/Users_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-", "-") + ".csv");
+                out = new File(backupTempDir, "/Users_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-", "-") + ".csv");
                 out.createNewFile();
                 success = makeUserCSV(out);
                 break;
             case "readings" :
-                out = new File(downloadFileTempDir, "/Readings_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-", "-") + ".csv");
+                out = new File(backupTempDir, "/Readings_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-", "-") + ".csv");
                 out.createNewFile();
                 success = makeReadingCSV(out);
                 break;
             case "userlogs" :
-                out = new File(downloadFileTempDir, "/UserLogs_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-", "-") + ".csv");
+                out = new File(backupTempDir, "/UserLogs_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-", "-") + ".csv");
                 out.createNewFile();
                 success = makeUserLogCSV(out);
                 break;
@@ -232,7 +226,7 @@ public class CSVService {
         }
         String csv = parseItemsToCSV(items);
         try{
-            File hash = new File(downloadFileTempDir, "/" + out.getName() + ".sha512");
+            File hash = new File(backupTempDir, "/" + out.getName() + ".sha512");
             hash.createNewFile();
             ByteTools.writeBytesToFile(hash, hashCSV(csv));
         }catch (Exception e){
