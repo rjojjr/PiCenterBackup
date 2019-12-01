@@ -63,11 +63,9 @@ public class CSVService {
                 downloadFile.createNewFile();
                 List<File> zipFiles = Arrays.asList(downloadFileTempDir.listFiles());
                 if(ZipTools.zip(zipFiles, downloadFile.getPath())){
-                    System.gc();
                     List<File> files = new ArrayList<>();
                     files.add(downloadFileTempDir);
                 }
-                System.gc();
                 List<File> files = new ArrayList<>();
                 files.add(downloadFileTempDir);
                 files.add(downloadFile);
