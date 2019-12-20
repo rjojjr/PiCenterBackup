@@ -65,6 +65,7 @@ public class CSVService {
                 files.add(backupTempDir);
                 DeleteTools.delete(files);
             }
+            System.gc();
         }catch (Exception e){
             e.printStackTrace();
         }
