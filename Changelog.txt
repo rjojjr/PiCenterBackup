@@ -2,6 +2,10 @@ Changelog
 
 1.0.00
 
+Build 100104
+    Added gc after backup.
+
+12/04/2019
 Build 100103
     Fixed bug that caused CSV file rows to be interlaced with blank lines.
 
