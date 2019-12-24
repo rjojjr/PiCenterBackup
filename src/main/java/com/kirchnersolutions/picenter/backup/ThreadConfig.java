@@ -19,15 +19,15 @@ public class ThreadConfig {
 
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
-        executor.setCorePoolSize(40);
+        executor.setCorePoolSize(9);
 
-        executor.setMaxPoolSize(1000);
+        executor.setMaxPoolSize(30);
 
         executor.setWaitForTasksToCompleteOnShutdown(true);
 
         executor.setKeepAliveSeconds(10);
 
-        executor.setThreadNamePrefix("picenter_task_executor_thread");
+        executor.setThreadNamePrefix("picenter_backupservice_task_executor_thread");
 
         executor.initialize();
 

@@ -1,6 +1,7 @@
 package com.kirchnersolutions.picenter.backup.csv;
 
 
+import com.kirchnersolutions.picenter.backup.comps.Status;
 import com.kirchnersolutions.picenter.backup.csv.parsers.CSVParserImpl;
 import com.kirchnersolutions.picenter.backup.entites.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,23 +30,27 @@ public class CSVService {
     UserLogRepository userLogRepository;
     AppUserRepository appUserRepository;
     ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    Status status;
 
-    private File dir, backupTempDir, backupFile, restoreDir, auto;
+    private File dir, backupTempDir, backupFile, restoreDir, auto, man;
 
     @Autowired
-    public CSVService(AppUserRepository appUserRepository, UserLogRepository userLogRepository, ReadingRepository readingRepository, ThreadPoolTaskExecutor threadPoolTaskExecutor){
+    public CSVService(AppUserRepository appUserRepository, UserLogRepository userLogRepository, ReadingRepository readingRepository, ThreadPoolTaskExecutor threadPoolTaskExecutor, Status status){
         this.appUserRepository = appUserRepository;
         this.readingRepository = readingRepository;
         this.userLogRepository = userLogRepository;
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+        this.status = status;
         dir = new File("PiCenter/Backup");
         restoreDir = new File(dir, "/Restore");
         auto = new File(dir, "/automated");
+        man = new File(dir, "/manual");
         backupTempDir = new File(auto, "/PiCenterBackup");
         backupFile = new File(auto, "/PiCenterBackup.zip");
         if(!dir.exists()){
             dir.mkdirs();
             auto.mkdirs();
+            man.mkdirs();
             restoreDir.mkdirs();
         }
     }
@@ -55,6 +60,53 @@ public class CSVService {
         try{
             if(makeCSVSwitch("all")){
                 backupFile = new File(auto, "/PiCenterAutoBackup_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-" , "-") + ".zip");
+                backupFile.createNewFile();
+                List<File> zipFiles = Arrays.asList(backupTempDir.listFiles());
+                if(ZipTools.zip(zipFiles, backupFile.getPath())){
+                    List<File> files = new ArrayList<>();
+                    files.add(backupTempDir);
+                }
+                List<File> files = new ArrayList<>();
+                files.add(backupTempDir);
+                DeleteTools.delete(files);
+            }
+            System.gc();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    @Scheduled(fixedDelay = 15000)
+    public void checkQueue(){
+        if(status.getStatus().equals("idle")){
+
+        }
+        try{
+            if(makeCSVSwitch("all")){
+                backupFile = new File(auto, "/PiCenterAutoBackup_" + CalenderConverter.getMonthDayYear(System.currentTimeMillis(), "-" , "-") + ".zip");
+                backupFile.createNewFile();
+                List<File> zipFiles = Arrays.asList(backupTempDir.listFiles());
+                if(ZipTools.zip(zipFiles, backupFile.getPath())){
+                    List<File> files = new ArrayList<>();
+                    files.add(backupTempDir);
+                }
+                List<File> files = new ArrayList<>();
+                files.add(backupTempDir);
+                DeleteTools.delete(files);
+            }
+            System.gc();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public void manualBackup(){
+        String[] date =  CalenderConverter.getMonthDayYearHourMinuteSecond(System.currentTimeMillis(), "-" , "-").split(" ");
+        try{
+            if(makeCSVSwitch("all")){
+                backupFile = new File(man, "/PiCenterBackup_" + "-" + date[0] + date[1] + ".zip");
                 backupFile.createNewFile();
                 List<File> zipFiles = Arrays.asList(backupTempDir.listFiles());
                 if(ZipTools.zip(zipFiles, backupFile.getPath())){
