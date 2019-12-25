@@ -279,9 +279,9 @@ public class CSVService {
         }
         String csv = parseItemsToCSV(items);
         try{
-            File hash = new File(backupTempDir, "/" + out.getName() + ".sha512");
+            /*File hash = new File(backupTempDir, "/" + out.getName() + ".sha512");
             hash.createNewFile();
-            ByteTools.writeBytesToFile(hash, hashCSV(csv));
+            ByteTools.writeBytesToFile(hash, hashCSV(csv));*/
         }catch (Exception e){
             e.printStackTrace();
         }
