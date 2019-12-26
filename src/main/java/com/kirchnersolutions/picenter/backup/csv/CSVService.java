@@ -77,7 +77,7 @@ public class CSVService {
 
     }
 
-    @Scheduled(fixedDelay = 15000)
+    //@Scheduled(fixedDelay = 15000)
     public void checkQueue(){
         if(status.getStatus().equals("idle")){
 
@@ -106,7 +106,7 @@ public class CSVService {
         String[] date =  CalenderConverter.getMonthDayYearHourMinuteSecond(System.currentTimeMillis(), "-" , "-").split(" ");
         try{
             if(makeCSVSwitch("all")){
-                backupFile = new File(man, "/PiCenterBackup_" + "-" + date[0] + date[1] + ".zip");
+                backupFile = new File(man, "/PiCenterManualBackup_" + date[0] + ".zip");
                 backupFile.createNewFile();
                 List<File> zipFiles = Arrays.asList(backupTempDir.listFiles());
                 if(ZipTools.zip(zipFiles, backupFile.getPath())){
@@ -278,13 +278,6 @@ public class CSVService {
             return false;
         }
         String csv = parseItemsToCSV(items);
-        try{
-            /*File hash = new File(backupTempDir, "/" + out.getName() + ".sha512");
-            hash.createNewFile();
-            ByteTools.writeBytesToFile(hash, hashCSV(csv));*/
-        }catch (Exception e){
-            e.printStackTrace();
-        }
         try{
             ByteTools.writeBytesToFile(out,
                             csv.getBytes("UTF-8")

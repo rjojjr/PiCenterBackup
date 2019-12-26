@@ -2,6 +2,7 @@ package com.kirchnersolutions.picenter.backup.rest;
 
 import com.kirchnersolutions.picenter.backup.comps.Auth;
 import com.kirchnersolutions.picenter.backup.comps.Status;
+import com.kirchnersolutions.picenter.backup.csv.CSVService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,13 @@ public class MainController {
 
     private Auth auth;
     private Status status;
+    private CSVService csvService;
 
     @Autowired
-    public MainController(Auth auth, Status status){
+    public MainController(Auth auth, Status status, CSVService csvService){
         this.auth = auth;
         this.status = status;
+        this.csvService = csvService;
     }
 
     @GetMapping("/status")
@@ -50,6 +53,7 @@ public class MainController {
             return "invalid token";
         }
         status.add("backup");
+        csvService.manualBackup();
         return status.currentTask();
     }
 
